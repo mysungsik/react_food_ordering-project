@@ -1,0 +1,50 @@
+.maindiv {
+  margin: 0 auto;
+  width: 50rem;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 20px;
+  background-color: rgb(175, 175, 175);
+}
+
+.cartItmes {
+  list-style: none;
+  padding: 0;
+}
+.cartItmes li {
+  margin: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.item_info {
+  width: 70%;
+  display: flex;
+  align-items: center;
+}
+
+.item_info h2 {
+  width: 70%;
+}
+
+.item_quantity input {
+  width: 5rem;
+}
+
+.total_price span {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.cart_buttons button {
+  width: 5rem;
+  height: 2rem;
+  font-size: 1rem;
+  border: none;
+  margin: 2rem 1rem;
+  border-radius: 10px;
+}
+
+.cart_buttons button:hover {
+  cursor: pointer;
+}

@@ -1,0 +1,6 @@
+<z-index>
+
+바탕화면 : -1
+header : 1
+footer : 1
+header-image : 0

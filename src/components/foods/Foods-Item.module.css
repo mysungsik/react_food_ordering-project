@@ -1,0 +1,47 @@
+.maindiv {
+  display: flex;
+  height: 5rem;
+}
+
+.foods_info {
+  display: flex;
+  width: 70%;
+  justify-content: space-between;
+}
+
+.foods_resist {
+  width: 30%;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.foods_resist label {
+  display: block;
+  width: 5rem;
+}
+
+.foods_resist .content {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.foods_resist input {
+  width: 3rem;
+  text-align: center;
+}
+
+.foods_resist button {
+  margin-top: 0.2rem;
+  width: 6rem;
+  height: 2rem;
+  background-color: red;
+  border-radius: 15px;
+  color: white;
+  font-weight: 600;
+  margin: 0.2rem auto;
+}
+
+.foods_resist button:hover {
+  cursor: pointer;
+}

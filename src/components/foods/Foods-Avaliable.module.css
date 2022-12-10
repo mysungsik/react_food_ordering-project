@@ -1,0 +1,7 @@
+.foodList {
+  list-style: none;
+}
+
+.food_name{
+  border: 3px solid white;
+}
