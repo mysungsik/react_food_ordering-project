@@ -4,3 +4,6 @@
 header : 1
 footer : 1
 header-image : 0
+
+카트 모달 백그라운드 : 2
+카트 모달 컨텐츠 : 3
