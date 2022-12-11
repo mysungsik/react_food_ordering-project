@@ -1,9 +1,16 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useContext } from "react";
 import styles from "./layout-header.module.css";
 import CartModal from "../modal/Cart-Modal";
+import CartContext from "../../../store/Cart-Context";
 
 function LayoutHeader() {
   const [showModal, setShowModal] = useState(false);
+  const cartCtx = useContext(CartContext);
+
+  const totalItemAmount = cartCtx.itemInfo.reduce(
+    (acc, item) => +acc + +item.amount,
+    0
+  );
 
   function toggleModal() {
     setShowModal((prev) => !prev);
@@ -30,6 +37,7 @@ function LayoutHeader() {
             />
           </svg>
           <h3>카트</h3>
+          <span> {totalItemAmount} </span>
         </li>
       </ul>
       <div className={styles.header_image}>
