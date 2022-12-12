@@ -146,7 +146,7 @@
 
                         return (
                             <CartContext.Provider value={context}>
-                            {props.children}
+                                {props.children}
                             </CartContext.Provider>
                         );
                     }
@@ -262,7 +262,7 @@
 
         ))}
 
-8. 카트 컴포넌트에서, "+, -" 누르면, Context의 itemInfo 안에 있는 값이 변경되어, 카트에 적용되게 만들기 with func.bind()
+8. 카트 컴포넌트에서, "+, -" 누르면, Context의 itemInfo 안에 있는 값이 변경되어, 카트에 적용되게 만들기 [with func.bind()]
 
     1) "카트 컴포넌트의 추가 함수", "추가 버튼"
 
@@ -285,13 +285,137 @@
             <button onClick={cartItemRemove.bind(null,item.id)}> - </button>
         </div>
 
-    2) Context 에서, 같은 id 로 추가를 누를경우, amount 만 추가되는 함수 로직 만들기
+    2) "Context 에서, 같은 id 로 추가를 누를경우, amount 만 추가되는 함수 로직 만들기"
+        <Context 안의 useReducer 훅 안의  reducerFunction 의 로직>
+
+    
+            function cartReducerFn(state, action) {                     // "state 는 현재상태", "action" 은 "dispatch 안에 들어있는 객체"들에 접근한다.
+              
+                if (action.type === "ADD_ITEM") {                       // "만약 같은 id가 있다면 그 id가 있는 index를 찾는다."
+                const sameIdIndex = state.itemInfo.findIndex(
+                    (item) => item.id == action.item.id
+                );
+            
+                const sameIdItem = state.itemInfo[sameIdIndex];         // "만약 INDEX 가 없다면, NULL 이 반환"
+            
+                let updatedItem;                                         // 업데이트된 하나
+                let updatedItems;                                       // 업데이트된 전체
+            
+                if (sameIdItem) {           
+                    updatedItem = {                             // 만약 존재한다면, [amount 는, 기존 상태+추가상태] 로 오버라이드
+                        ...sameIdItem,
+                        amount: +sameIdItem.amount + +action.item.amount,
+                    };
+                    updatedItems = [...state.itemInfo];                     // 기존 최종 itemInfo 를 가져 온 후
+                    updatedItems[sameIdIndex] = updatedItem;                // 새로운 상태를 받은 index 만 오버라이드
+                } else {
+                    updatedItems = state.itemInfo.concat(action.item);          // 만약 없다면, 기존처럼, updatedItem 은 그냥 받아온 그대로, 추가상태는 추가상태 그대로
+                }
+            
+                const updatedPrice =
+                    state.totalPrice + action.item.price * action.item.amount;      // 새 값은 item 객체로 넣어준다.
+            
+                return {
+                    itemInfo: updatedItems,
+                    totalPrice: updatedPrice,
+                };
+            }
 
 
 
-9. Context 로직 마저 이어가기
+9. context의 reducerFunction 에 "카트에서 삭제"로직 만들기 with "Array.splice()"
+
+    * Array.splice(IndexNumber, howManydelete, insertElement)
+
+        const months = ['Jan', 'March', 'April', 'June'];
+
+        months.splice(1, 0, 'Feb');
+        console.log(months);        // ["Jan", "Feb", "March", "April", "June"]
+
+        months.splice(4, 1, 'May');
+        console.log(months);        // ["Jan", "Feb", "March", "April", "May"]
 
 
+    [제거 로직]
+        with "Array.splice()"
+
+        0. context에서 action 으로, id 를 받아, 해당 INDEX 를 찾는다.
+        1. 카트에서 - 를 누르면, 해당 id에 대한 amount 에 -1 을 시킨다.
+        2. 카트에서, "제거" 버튼을 누르면, 해당 id에 대한 Element 를 "제거" 한다.
+        3. 카트에서 - 를 눌러, amount 가 "0 이하" 인 상태가 된다면, 해당 Element 를 "제거"한다.
+
+    [시작]
+    
+        1. 기본적인 "-" 했을때의 변형되는 context의 state 에 대한 함수 생성
+
+            <Cart-Context> - "reducerFunction"
+
+                if (action.type === "REMOVE_ITEM") {
+                    const selectedIndex = state.itemInfo.findIndex(
+                        (item) => item.id === action.id);                   // id에 맞는 index 를 찾는다.
+
+                    const selectedItem = state.itemInfo[selectedIndex];     // 해당 index의 값을 저장
+                
+                    let decreseItemAmount = selectedItem.amount - 1;        // - 를 누르면 하나씩 줄인다.
+                    let updatedItem = selectedItem;                         // 기존 상태를 받고
+                    updatedItem.amount = decreseItemAmount;                 // amount 를 오버라이드
+                
+                    let updatedItems = [...state.itemInfo];                 // 기존 전체 배열을 받고
+                    updatedItems[selectedIndex] = updatedItem;              // 해당 updatedItem 을 오버라이드
+                
+                    const updatedPrice = state.totalPrice - selectedItem.price; // totalPrice 는 price에 해당하는 값을 빼준다.
+                
+                    return {
+                        itemInfo: updatedItems,
+                        totalPrice: updatedPrice,
+                    };
+                }
+            
+            <Cart-Context> - "reducerFunction-Dispatch"
+
+                function removeItem(id) {
+                    dispatchCartAction({ type: "REMOVE_ITEM", id: id }); // 페이로드로, 변경할 데이터에 접근한다.
+                }
+
+            <Cart> - "-" 눌럿을때, function
+
+                function cartItemDecrease(id) {
+                    cartCtx.removeItem(id);
+                }
+
+        2. "만약 amount 가 0이하 가 된다면" 추가
+
+            if (action.type === "REMOVE_ITEM") {
+                const selectedIndex = state.itemInfo.findIndex(     // id에 맞는 index 를 찾는다.
+                    (item) => item.id === action.id); 
+
+                const selectedItem = state.itemInfo[selectedIndex];             // 해당 index의 값을 저장
+            
+                let decreseItemAmount = selectedItem.amount - 1;                // - 를 누르면 하나씩 줄인다.
+
+                let updatedItem = selectedItem;                                 // 기존 상태를 받고
+                updatedItem.amount = decreseItemAmount;                         // amount 를 오버라이드
+            
+                let updatedItems;
+            
+                if (updatedItem.amount <= 0) {                  // 만약 업데이트된 amount가 0보다 작아진다면
+               
+                    updatedItems = [...state.itemInfo];         // 기존 전체 배열 받고
+                    updatedItems.splice(selectedIndex, 1);      // 기존 전체배열중, 해당 INDEX 를 삭제
+
+                } else {                                        // 만약 업데이트된 amount 가 0 이상이라면
+
+                    updatedItems = [...state.itemInfo];         // 기존 전체 배열을 받고
+                    updatedItems[selectedIndex] = updatedItem;  // 해당 updatedItem 을 오버라이드
+                }
+            
+                const updatedPrice = state.totalPrice - selectedItem.price; // totalPrice 는 price에 해당하는 값을 빼준다.
+            
+                return {
+                    itemInfo: updatedItems,
+                    totalPrice: updatedPrice,
+                };
+            }
 
     
 

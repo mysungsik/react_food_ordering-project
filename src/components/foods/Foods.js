@@ -4,7 +4,7 @@ import styles from "./Foods.module.css";
 
 function Foods() {
   return (
-    <div className={styles.maindiv}>
+    <div className={`${styles.maindiv}`}>
       <SummuryFood />
       <AvaliableFoods />
     </div>

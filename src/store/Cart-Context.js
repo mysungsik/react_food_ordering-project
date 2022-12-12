@@ -8,7 +8,6 @@ const CartContext = createContext({
 });
 
 function cartReducerFn(state, action) {
-  // "state 는 현재상태", "action" 은 "dispatch 안에 들어있는 객체"들에 접근한다.
   if (action.type === "ADD_ITEM") {
     const sameIdIndex = state.itemInfo.findIndex(
       (item) => item.id == action.item.id
@@ -29,8 +28,7 @@ function cartReducerFn(state, action) {
       updatedItems[sameIdIndex] = updatedItem; // 새로운 상태를 받은 index 만 오버라이드
     } else {
       // 만약 없다면, 기존처럼, updatedItem 은 그냥 받아온 그대로, 추가상태는 추가상태 그대로
-      updatedItem = { ...action.item };
-      updatedItems = state.itemInfo.concat(updatedItem);
+      updatedItems = state.itemInfo.concat(action.item);
     }
 
     const updatedPrice =
@@ -42,7 +40,33 @@ function cartReducerFn(state, action) {
     };
   }
   if (action.type === "REMOVE_ITEM") {
-    return;
+    const selectedIndex = state.itemInfo.findIndex(
+      (item) => item.id === action.id
+    ); // id에 맞는 index 를 찾는다.
+    const selectedItem = state.itemInfo[selectedIndex]; // 해당 index의 값을 저장
+
+    let decreseItemAmount = selectedItem.amount - 1; // - 를 누르면 하나씩 줄인다.
+    let updatedItem = selectedItem; // 기존 상태를 받고
+    updatedItem.amount = decreseItemAmount; // amount 를 오버라이드
+
+    let updatedItems;
+
+    if (updatedItem.amount <= 0) {
+      // 만약 업데이트된 amount가 0보다 작아진다면
+      updatedItems = [...state.itemInfo]; // 기존 전체 배열 받고
+      updatedItems.splice(selectedIndex, 1); // 기존 전체배열중, 해당 INDEX 를 삭제
+    } else {
+      // 만약 업데이트된 amount 가 0 이상이라면
+      updatedItems = [...state.itemInfo]; // 기존 전체 배열을 받고
+      updatedItems[selectedIndex] = updatedItem; // 해당 updatedItem 을 오버라이드
+    }
+
+    const updatedPrice = state.totalPrice - selectedItem.price; // totalPrice 는 price에 해당하는 값을 빼준다.
+
+    return {
+      itemInfo: updatedItems,
+      totalPrice: updatedPrice,
+    };
   }
 }
 
