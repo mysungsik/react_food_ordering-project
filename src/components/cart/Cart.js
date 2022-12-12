@@ -22,10 +22,13 @@ function Cart(props) {
     });
   }
 
-  function cartItemRemove(id) {}
+  function cartItemDecrease(id) {
+    //  cartCtx.removeItem 메서드는, (id) 를 받는다.
+    cartCtx.removeItem(id);
+  }
 
   const cartItems = cartItemInfo.map((item) => (
-    <div>
+    <div key={item.id}>
       <li>
         <div className={styles.item_info}>
           <h2> {item.name}</h2>
@@ -34,16 +37,11 @@ function Cart(props) {
         <div className={styles.item_quantity}>
           <div>
             <label htmlFor={"number"}> 수량 </label>
-            <input
-              id={"number"}
-              type={"number"}
-              value={item.amount}
-              defaultValue={item.amount}
-            />
+            <input id={"number"} type={"number"} value={item.amount} readOnly />
           </div>
           <div>
             <button onClick={cartItemAdd.bind(null, item.id)}> + </button>
-            <button onClick={cartItemRemove.bind(null, item.id)}> - </button>
+            <button onClick={cartItemDecrease.bind(null, item.id)}> - </button>
           </div>
         </div>
       </li>

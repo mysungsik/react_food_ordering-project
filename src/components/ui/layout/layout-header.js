@@ -1,10 +1,11 @@
-import { Fragment, useState, useContext } from "react";
+import { Fragment, useState, useContext, useEffect } from "react";
 import styles from "./layout-header.module.css";
 import CartModal from "../modal/Cart-Modal";
 import CartContext from "../../../store/Cart-Context";
 
 function LayoutHeader() {
   const [showModal, setShowModal] = useState(false);
+  const [btnBump, setBtnBump] = useState(false);
   const cartCtx = useContext(CartContext);
 
   const totalItemAmount = cartCtx.itemInfo.reduce(
@@ -15,13 +16,27 @@ function LayoutHeader() {
   function toggleModal() {
     setShowModal((prev) => !prev);
   }
+
+  let btnStyle = `${styles.cart} ${btnBump ? styles.bump : ""}`;
+
+  useEffect(() => {
+    setBtnBump(() => true);
+    const setTime = setTimeout(() => {
+      setBtnBump(false);
+    }, 300);
+
+    return () => {
+      clearTimeout(setTime);
+    };
+  }, [cartCtx.totalPrice]);
+
   return (
     <Fragment>
       <ul className={styles.header}>
         <li>
           <h1>Logo</h1>
         </li>
-        <li className={styles.cart} onClick={toggleModal}>
+        <li className={btnStyle} onClick={toggleModal}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -37,7 +52,7 @@ function LayoutHeader() {
             />
           </svg>
           <h3>카트</h3>
-          <span> {totalItemAmount} </span>
+          <span className={styles.total_amount}> {totalItemAmount} </span>
         </li>
       </ul>
       <div className={styles.header_image}>

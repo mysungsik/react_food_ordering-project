@@ -79,7 +79,7 @@
 
     Array.reduce(( 축적된값, 선택 )=>{ 로직 }, 초기값)
  
-    1) [0 ,1,2,3 ] 더하기
+    1) [0, 1, 2, 3 ] 더하기
 
         const sum = Array.reduce((acc, item) => acc + item , 0)
 
@@ -91,6 +91,18 @@
 
     concat 은 push 와 달리,
     배열 안에 새 값을 넣어주면서도, "새 배열" 을 반환한다.
+
+    ArrayA = [1,2,3]
+
+    [  ArrayA.push(5)  ]
+
+        ArrayA = [1,2,3,5]
+
+    [  const ArrayB = ArrayA.concat(7)  ]
+
+        ArrayA = [1,2,3,5]
+
+        ArrayB = [1,2,3,5,7]
 
 10. [ javascript ] func.bind() ** 으로 "무한증식 버튼에 각각 다른 기능의 함수 바인드하기"
 
