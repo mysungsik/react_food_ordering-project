@@ -2,6 +2,26 @@
   list-style: none;
 }
 
-.food_name{
+.foodList p {
+  color: white;
+}
+
+.food_name {
   border: 3px solid white;
+}
+
+.bump {
+  animation: bump 500ms ease-in-out;
+}
+
+@keyframes bump {
+  0% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }
