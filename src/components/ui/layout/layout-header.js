@@ -2,9 +2,11 @@ import { Fragment, useState, useContext, useEffect } from "react";
 import styles from "./layout-header.module.css";
 import CartModal from "../modal/Cart-Modal";
 import CartContext from "../../../store/Cart-Context";
+import OrderSucessModal from "../modal/Order-Sucess-Modal";
 
 function LayoutHeader() {
   const [showModal, setShowModal] = useState(false);
+  const [showSuccessModal, setShowshowSuccessModalModal] = useState(true);
   const [btnBump, setBtnBump] = useState(false);
   const cartCtx = useContext(CartContext);
 
@@ -15,6 +17,9 @@ function LayoutHeader() {
 
   function toggleModal() {
     setShowModal((prev) => !prev);
+  }
+  function toggleSuccessModal() {
+    setShowshowSuccessModalModal((prev) => !prev);
   }
 
   let btnStyle = `${styles.cart} ${btnBump ? styles.bump : ""}`;
@@ -58,7 +63,15 @@ function LayoutHeader() {
       <div className={styles.header_image}>
         <img src="/mainpage/meals.jpg" alt="main-background"></img>
       </div>
-      {showModal && <CartModal toggleModal={toggleModal} />}
+      {showModal && (
+        <CartModal
+          toggleModal={toggleModal}
+          toggleSuccessModal={toggleSuccessModal}
+        />
+      )}
+      {showSuccessModal && (
+        <OrderSucessModal toggleSuccessModal={toggleSuccessModal} />
+      )}
     </Fragment>
   );
 }

@@ -5,7 +5,7 @@ import CartUseInput from "./Cart-userInput";
 
 function Cart(props) {
   const [showCheckOut, setShowCheckOut] = useState(false);
-  const { toggleModal } = props;
+  const { toggleModal, toggleSuccessModal } = props;
   const cartCtx = useContext(CartContext);
   const cartItemInfo = cartCtx.itemInfo;
 
@@ -76,7 +76,7 @@ function Cart(props) {
         <span> {cartCtx.totalPrice.toLocaleString("ko-KR")} 원 </span>
       </div>
       {Buttons}
-      {showCheckOut && <CartUseInput toggleModal={toggleModal}/>}
+      {showCheckOut && <CartUseInput toggleModal={toggleModal} toggleSuccessModal={toggleSuccessModal} />}
     </div>
   );
 }

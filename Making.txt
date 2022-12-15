@@ -481,8 +481,221 @@
 11. 카트의 주문 창 만들기
     
     Cart-Modal 아래 인풋 쫙 해서, 입력정보 받고 넘기기
-
     Order 누르면 입력정보 나오게하기
     
+    버튼 누르면, 제출
+    DB는 파이어베이스
+    제출이 이상하게 된다? => 내비두고 안꺼짐
+    제출이 잘 되었다? => 오케이 꺼짐
+
+        import { useRef, useState } from "react";
+        import { userOrder } from "../../helper/user-input-http";
+        import { useContext } from "react";
+        import CartContext from "../../store/Cart-Context";
+
+        function CartUseInput(props) {
+        const { toggleModal } = props;
+        const [errorMessage, setErrorMessage] = useState("");
+        const cartCtx = useContext(CartContext);
+
+        const nameRef = useRef();
+        const addressRef = useRef();
+        const phoneRef = useRef();
+
+        async function sumbitHandler(e) {
+            e.preventDefault();
+            setPorcessing(true);
+
+            const userOrderInput = {
+            name: nameRef.current.value,
+            address: addressRef.current.value,
+            phone: phoneRef.current.value,
+            orderedFoods: cartCtx.itemInfo,
+            };
+
+            const orderResult = await userOrder(userOrderInput);
+
+            if (orderResult.nameError) {
+            setErrorMessage(() => orderResult.nameError);
+            return;
+            }
+            if (orderResult.addressError) {
+            setErrorMessage(() => orderResult.addressError);
+            return;
+            }
+            if (orderResult.phoneError) {
+            setErrorMessage(() => orderResult.phoneError);
+            return;
+            }
+            if (
+            orderResult.nameError === undefined &&
+            orderResult.addressError === undefined &&
+            orderResult.phoneError === undefined
+            ) {
+            toggleModal(false);
+            }
+        }
+
+        function cancelHandler(e) {
+            e.preventDefault();
+            toggleModal();
+        }
+        return (
+            <form>
+            {errorMessage && <p> {errorMessage}</p>}
+            <div>
+                <label htmlFor="name"> 주문자 이름 </label>
+                <input type={"text"} id={"name"} ref={nameRef} />
+            </div>
+            <div>
+                <label htmlFor="address"> 주소 </label>
+                <input type={"text"} id={"address"} ref={addressRef} />
+            </div>
+            <div>
+                <label htmlFor="phone"> 전화번호 </label>
+                <input type={"text"} id={"phone"} ref={phoneRef} />
+            </div>
+            <div>
+                <button onClick={(e) => sumbitHandler(e)}> 결제하기</button>
+                <button onClick={(e) => cancelHandler(e)}> 취소</button>
+            </div>
+            </form>
+        );
+        }
+
+        export default CartUseInput;
 
 
+            
+12. 카트 주문창에, notification 만들기 with useReducer, (기존의 errorMessage는 제거 가능)  
+
+
+            //  버튼 누름, porcessing ...
+            // 전송이 완료 혹은 실패 => processing message 를 완료 혹은 실패
+            // 2초후에 꺼짐
+
+            import { useRef, useState, useReducer, useEffect } from "react";
+            import { userOrder } from "../../helper/user-input-http";
+            import { useContext } from "react";
+            import CartContext from "../../store/Cart-Context";
+
+
+            function notiReducerFn(state, action) {
+            if (
+                action.type === "PROCESSING" ||
+                action.type === "ERROR" ||
+                action.type === "SUCCESS"
+            ) {
+                const updatedNoti = true;
+                const updatedMessage = action.message;
+                return {
+                show: updatedNoti,
+                message: updatedMessage,
+                };
+            }
+            if (action.type === "END") {
+                const updatedNoti = false;
+                const updatedMessage = null;
+                return {
+                show: updatedNoti,
+                message: updatedMessage,
+                };
+            }
+            }
+
+            function CartUseInput(props) {
+            const { toggleModal } = props;
+            const cartCtx = useContext(CartContext);
+            const [notification, notificationDispatch] = useReducer(notiReducerFn, {
+                show: false,
+                message: "",
+            });
+
+            const nameRef = useRef();                 // input value 들
+            const addressRef = useRef();
+            const phoneRef = useRef();
+
+            async function sumbitHandler(e) {         // 제출 핸들러
+                e.preventDefault();
+                notificationDispatch({ type: "PROCESSING", message: "processing..." }); // useReducer, 전송중
+
+                const userOrderInput = {
+                name: nameRef.current.value,
+                address: addressRef.current.value,
+                phone: phoneRef.current.value,
+                orderedFoods: cartCtx.itemInfo,
+                };
+
+                const orderResult = await userOrder(userOrderInput);
+
+                if (orderResult.nameError) {            // useReducer, 에러
+                notificationDispatch({
+                    type: "ERROR",
+                    message: orderResult.nameError,
+                });
+                return;
+                }
+                if (orderResult.addressError) {         // useReducer, 에러
+                notificationDispatch({
+                    type: "ERROR",
+                    message: orderResult.addressError,
+                });
+                return;
+                }
+                if (orderResult.phoneError) {           // useReducer, 에러
+                notificationDispatch({
+                    type: "ERROR",
+                    message: orderResult.phoneError,
+                });
+                return;
+                }
+                if (
+                orderResult.nameError === undefined &&
+                orderResult.addressError === undefined &&
+                orderResult.phoneError === undefined
+                ) {
+                notificationDispatch({ type: "SUCCESS", message: "주문 성공!" }); // useReducer, 주문성공
+                setTimeout(() => {
+                    notificationDispatch({ type: "END" });      // useReducer, 리셋
+                    toggleModal(false);                         // 모달 종료
+                }, 3000);
+                }
+            }
+
+            function cancelHandler(e) {
+                e.preventDefault();
+                toggleModal();
+            }
+            return (
+                <form>
+                {notification.show && <p> {notification.message}</p>}
+                <div>
+                    <label htmlFor="name"> 주문자 이름 </label>
+                    <input type={"text"} id={"name"} ref={nameRef} />
+                </div>
+                <div>
+                    <label htmlFor="address"> 주소 </label>
+                    <input type={"text"} id={"address"} ref={addressRef} />
+                </div>
+                <div>
+                    <label htmlFor="phone"> 전화번호 </label>
+                    <input type={"text"} id={"phone"} ref={phoneRef} />
+                </div>
+                <div>
+                    <button onClick={(e) => sumbitHandler(e)}> 결제하기</button>
+                    <button onClick={(e) => cancelHandler(e)}> 취소</button>
+                </div>
+                </form>
+            );
+        }
+
+        export default CartUseInput;
+
+13. notification 컴포넌트 따로 만들어 붙이기
+    
+    주문 완료시에, 석세스 모달 넣어 붙이자.
+    header 로 부터 그냥 props drilling 을 통해, 쭉쭉 넣어주었다.
+
+    context X
+
+14. 

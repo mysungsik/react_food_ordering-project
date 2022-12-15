@@ -1,3 +1,4 @@
+
 export async function userOrder(userData) {
   if (userData.name === "") {
     return { nameError: "이름을 확인해주세요" };
@@ -6,7 +7,7 @@ export async function userOrder(userData) {
     return { addressError: "주소를 확인해주세요" };
   }
   if (userData.phone === "") {
-    return { nphoneError: "번호를 확인해주세요" };
+    return { phoneError: "번호를 확인해주세요" };
   }
 
   let response;

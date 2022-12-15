@@ -3,11 +3,11 @@ import { createPortal } from "react-dom";
 import styles from "./Cart-Modal.module.css";
 
 function CartModalContent(props) {
-  const { toggleModal } = props;
+  const { toggleModal, toggleSuccessModal } = props;
 
   return (
     <div className={styles.modal_content}>
-      <Cart toggleModal={toggleModal} />
+      <Cart toggleModal={toggleModal} toggleSuccessModal={toggleSuccessModal} />
     </div>
   );
 }
@@ -18,7 +18,7 @@ function CartModalBackgroundprops(props) {
 }
 
 function CartModal(props) {
-  const { toggleModal } = props;
+  const { toggleModal, toggleSuccessModal } = props;
   return (
     <div className={styles.modal}>
       {createPortal(
@@ -26,7 +26,10 @@ function CartModal(props) {
         document.getElementById("cart-modal-background")
       )}
       {createPortal(
-        <CartModalContent toggleModal={toggleModal} />,
+        <CartModalContent
+          toggleModal={toggleModal}
+          toggleSuccessModal={toggleSuccessModal}
+        />,
         document.getElementById("cart-modal-content")
       )}
     </div>
